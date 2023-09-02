@@ -11,6 +11,36 @@ import (
 	"slices"
 )
 
+func TestWrap(t *testing.T) {
+	t.Parallel()
+
+	m := map[string]any{
+		"Name":    "Wednesday",
+		"Age":     float64(6),
+		"Parents": []any{"Gomez", "Morticia"},
+	}
+	wm := Wrap(m).(M)
+
+	equal(t, "Wednesday", wm.StringValue("Name"))
+	equal(t, 6, wm.AsInt("Age"))
+	equalSlice(t, []string{"Gomez", "Morticia"}, wm.Array("Parents").Strings())
+}
+
+func TestUnwrap(t *testing.T) {
+	t.Parallel()
+
+	wm := M{
+		"Name":    "Wednesday",
+		"Age":     6,
+		"Parents": A{"Gomez", "Morticia"},
+	}
+	m := Unwrap(wm).(map[string]any)
+
+	equal(t, "Wednesday", m["Name"].(string))
+	equal(t, 6, m["Age"].(int))
+	equalSlice(t, []any{"Gomez", "Morticia"}, m["Parents"].([]any))
+}
+
 func TestM_Exists(t *testing.T) {
 	t.Parallel()
 

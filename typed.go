@@ -56,7 +56,7 @@ func (a *A) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Wrap wraps map[string]any and []any to 'M' and 'A' recurse down.
+// Wrap wraps map[string]any and []any to M and A recurse down.
 func Wrap(a any) any {
 	return wrapper(a)
 }
@@ -75,6 +75,28 @@ func wrapper(a any) any {
 			x[i] = wrapper(v)
 		}
 		return A(x)
+	}
+}
+
+// Unwrap unwraps M and A to map[string]any and []any recurse down.
+func Unwrap(a any) any {
+	return unwrapper(a)
+}
+
+func unwrapper(a any) any {
+	switch x := a.(type) {
+	default:
+		return a
+	case M:
+		for k, v := range x {
+			x[k] = unwrapper(v)
+		}
+		return map[string]any(x)
+	case A:
+		for i, v := range x {
+			x[i] = unwrapper(v)
+		}
+		return []any(x)
 	}
 }
 
@@ -267,23 +289,6 @@ func (m M) RawMessage(key string) json.RawMessage {
 // occurs or if the value doesn't exist, this method panics.
 func (m M) Any(key string) any {
 	return unwrapper(lookup[any](m, key))
-}
-
-func unwrapper(a any) any {
-	switch x := a.(type) {
-	default:
-		return a
-	case M:
-		for k, v := range x {
-			x[k] = unwrapper(v)
-		}
-		return map[string]any(x)
-	case A:
-		for i, v := range x {
-			x[i] = unwrapper(v)
-		}
-		return []any(x)
-	}
 }
 
 // AnyOK is the same as Any, except it returns a boolean instead of
