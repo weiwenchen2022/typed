@@ -15,7 +15,7 @@ go get github.com/weiwenchen2022/typed
 
 ## Note
 
-Although the library can be used with any `map[string]any` and `[]any`, it *is* tailored to be used with `encoding/json`.
+Although the library *is* tailored to be used with `encoding/json`, it also can be used with any `map[string]any` and `[]any`.
 
 Specifically, it wrapped `map[string]any` and `[]any` to `M` and `A` recurse down. If the given key is multiple keys conjunction with dot "." character, corresponding methods also recurse down.
 
